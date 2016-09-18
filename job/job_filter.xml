@@ -1,0 +1,48 @@
+//作业配置
+//版本：1.0
+
+//模块配置
+<mod>
+	//模块名称
+	<name>tfidf</name>
+	//工作目录
+	<dir>/home/rank/zhangyong/tfidf/work</dir>
+	//
+	<log_path>/home/rank/zhangyong/tfidf/log</log_path>
+	//模块维护者，以接收报警邮件
+	<owner>zhangyong@weidian.com</owner>
+	//
+	<hdfs_dir>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf</hdfs_dir>
+	//指定需要运行的任务
+	<task_run>topn, item_filter</task_run>
+</mod>
+
+<task>
+	//任务名称
+	<code>topn</code>
+	<queue>rank</queue>
+	//采用相对路径
+	<mapper>sh -x work/topn_map.sh</mapper>
+	<reducer>sh -x work/topn_reduce.sh ${topn} ${rho}</reducer>
+	<key_num>2</key_num>
+	<sort_num>3</sort_num>
+	//多个输入以逗号分隔
+	<input_files>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/tfidf/part-*</input_files>
+	//输出的HDFS路径
+	<output>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/topn_${topn}</output>
+</task>
+
+<task>
+	//任务名称
+	<code>item_filter</code>
+	<queue>rank</queue>
+	//采用相对路径
+	<mapper>sh -x work/item_filter_map.sh</mapper>
+	<reducer>sh -x work/item_filter_reduce.sh</reducer>
+	<key_num>2</key_num>
+	<sort_num>3</sort_num>
+	//多个输入以逗号分隔
+	<input_files>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/topn_${topn}/part-*, /user/rank/title_seg2/part-*</input_files>
+	//输出的HDFS路径
+	<output>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/item_filter_${topn}</output>
+</task>

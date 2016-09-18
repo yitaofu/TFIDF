@@ -1,0 +1,91 @@
+//作业配置
+//版本：1.0
+
+//模块配置
+<mod>
+	//模块名称
+	<name>tfidf</name>
+	//工作目录
+	<dir>/home/rank/zhangyong/tfidf/work</dir>
+	//
+	<log_path>/home/rank/zhangyong/tfidf/log</log_path>
+	//模块维护者，以接收报警邮件
+	<owner>zhangyong@weidian.com</owner>
+	//
+	<hdfs_dir>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf</hdfs_dir>
+	//指定需要运行的任务
+	<task_run>cid_term, tf, idf, cid, tfidf</task_run>
+</mod>
+
+<task>
+	//任务名称
+	<code>cid_term</code>
+	<queue>rank</queue>
+	//采用相对路径
+	<mapper>sh -x work/cid_term_map.sh</mapper>
+	<reducer>sh -x work/cid_term_reduce.sh</reducer>
+	<key_num>3</key_num>
+	<sort_num>3</sort_num>
+	//多个输入以逗号分隔
+	<input_files>/user/rank/title_seg2/part-*</input_files>
+	//输出的HDFS路径
+	<output>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/cid_term</output>
+</task>
+
+<task>
+	//任务名称
+	<code>tf</code>
+	<queue>rank</queue>
+	//采用相对路径
+	<mapper>sh -x work/tf_map.sh</mapper>
+	<reducer>sh -x work/tf_reduce.sh</reducer>
+	<key_num>1</key_num>
+	<sort_num>2</sort_num>
+	//多个输入以逗号分隔
+	<input_files>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/cid_term/part-*</input_files>
+	//输出的HDFS路径
+	<output>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/tf</output>
+</task>
+
+<task>
+	//任务名称
+	<code>idf</code>
+	<queue>rank</queue>
+	//采用相对路径
+	<mapper>sh -x work/idf_map.sh</mapper>
+	<reducer>sh -x work/idf_reduce.sh</reducer>
+	
+	//多个输入以逗号分隔
+	<input_files>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/tf/part-*</input_files>
+	//输出的HDFS路径
+	<output>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/idf</output>
+</task>
+
+<task>
+	//任务名称
+	<code>cid</code>
+	<queue>rank</queue>
+	//采用相对路径
+	<mapper>sh -x work/cid_map.sh</mapper>
+	<reducer>sh -x work/cid_reduce.sh</reducer>
+	<task_num>1</task_num>
+	//多个输入以逗号分隔
+	<input_files>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/cid_term/part-*</input_files>
+	//输出的HDFS路径
+	<output>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/cid</output>
+</task>
+
+<task>
+	//任务名称
+	<code>tfidf</code>
+	<queue>rank</queue>
+	//采用相对路径
+	<mapper>sh -x work/tfidf_map.sh</mapper>
+	<reducer>sh -x work/tfidf_reduce.sh</reducer>
+	<key_num>1</key_num>
+	<sort_num>2</sort_num>
+	//多个输入以逗号分隔
+	<input_files>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/cid/part-*, /data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/idf/part-*</input_files>
+	//输出的HDFS路径
+	<output>/data/archive/app_oeudjgn5872a7c3aaa54_datamine/tfidf/tfidf</output>
+</task>
